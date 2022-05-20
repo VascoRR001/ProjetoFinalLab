@@ -1,0 +1,10 @@
+{
+    "env":{
+        "MYSQL_USER":"root",
+        "MYSQL_PASSWORD":"vasco",
+        "MYSQL_DATABASE":"SGAR",
+        "MYSQL_HOST":"locahost",
+        "MYSQL_PORT":"3306"
+    }
+}
+
