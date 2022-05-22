@@ -1,5 +1,4 @@
 node_modules
 .vscode
 *.txt
-Modelagem-SGAR.mwb.bak
-Modelagem-SGAR.mwb
+*.mwb
