@@ -316,3 +316,53 @@ exports.postVotacao=(req,res,next)=>{
       
 
     }
+
+
+    exports.postIntervsEmReun=(req,res,next)=>{
+        mysql.getConnection((erro,connection)=>{
+            if(erro) return res.status(500).send({error:erro});
+            const IntervenientesArray=[];
+            for(i=0;i<req.body.length;i++){
+                IntervenientesArray.append(req.body[i].id_interv);
+            }
+
+            IntervenientesArray.forEach(connection.query('INSERT INTO Intervenientes (nome,apelido) VALUES (?,?)',
+            [req.body[i].nome,req.body[i].apelido],
+            (error,result,field)=>{
+          
+          if(error){
+              return res.status(500).send({
+                  error:error,
+                  Response:null
+              });
+          }
+          connection.query('INSERT INTO IntervenienteshasReunioes (idinterv,idreuniao) VALUES(?,?)',
+          [result.insertedId,req.params.id_reuniao],
+          (error,resultado,field)=>{
+              if(error){
+                  return res.status(500).send({
+                      error:error,
+                      Response:null
+                  });
+              }
+              const IntervInserido={
+                  mensagem:`Interveniente inserido na reunião ${req.params.id_reuniao}`,
+                  interveniente:{
+                      id:result.insertedId,
+                      nome:req.body.nome,
+                      apelido:req.body.apelido
+                  } 
+              }
+          });
+          res.status(201).send({
+              IntervInserido,
+              request:{
+                tipo:'POST',
+                descricao:`Inserir um interveniente a uma reunião`,
+                url:'http://localhost:3000/reunioes'
+                }
+            });
+           }));
+      
+        });
+    }

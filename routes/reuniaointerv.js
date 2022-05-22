@@ -17,6 +17,7 @@ router.post('/presenças',login,ReunioesIntervController.postPresenças);
 router.post('/votar-em-assunto',login,ReunioesIntervController.postVotacao);
 //ADICIONA UM INTEVENIENTE A UMA REUNIÃO
 router.post('/:id_reuniao',login,ReunioesController.postIntervEmReun);
-
+//ADICIONA MÚLTIPLOS INTERVENIENTES A UMA REUNIÃO DE UMA VEZ
+router.post('/:id_reuniao',ReunioesIntervController.postIntervsEmReun);
 
 module.exports=router;

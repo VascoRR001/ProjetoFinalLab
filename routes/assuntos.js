@@ -13,7 +13,7 @@ router.post('/adicionar-assunto/:id_reuniao',login,AssuntoController.postAssunto
 //RETORNA UM ASSUNTO DE UMA REUNIÃO
 router.get('/:idreuniao/:id_assunto',AssuntoController.getAssunto);
 //ATUALIZAR/EDITAR UM ASSUNTO
-router.patch('/:id_assunto',login,AssuntoController.patchAssunto);
+router.patch('/:id_reuniao/:id_assunto',login,AssuntoController.patchAssunto);
 //REMOVE/ELIMINA UM ASSUNTO DE UMA DETERMINADA REUNIÃO
 router.delete('/:id_assunto',login,AssuntoController.deleteAssunto);
 

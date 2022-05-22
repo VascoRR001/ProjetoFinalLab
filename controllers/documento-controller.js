@@ -54,13 +54,15 @@ exports.postDocumento=(req,res,next)=>{
 
     mysql.getConnection((erro,connection)=>{
 
-        connection.query('SELECT * FROM Reunioes WHERE idreuniao=?',[req.params.id_reuniao],(error,result,fields)=>{
+        connection.query('SELECT * FROM Reunioes WHERE idreuniao=?',
+        [req.params.id_reuniao],
+        (error,result,fields)=>{
             if(error) return res.status(500).send({error:error});
             if(result.length==0) return res.status(404).send({mensagem:'Reunião não encontrada'});
         });
 
-          connection.query('INSERT INTO Documentos (idreuniao) VALUES (?)',
-          [req.params.id_reuniao],
+          connection.query('INSERT INTO Documentos (idreuniao,nome,designacao,formato,tipodoc) VALUES (?)',
+          [req.params.id_reuniao,req.body.nome,req.body.designacao,req.body.formato,req.body.tipodoc],
           (error,result,field)=>{
               
         connection.release();
@@ -76,6 +78,10 @@ exports.postDocumento=(req,res,next)=>{
             documento:{ 
                     idreuniao:req.params.id_reuniao,
                     iddocumento:result.insertedId,
+                    nome:req.body.nome,
+                    designacao:req.body.designacao,
+                    formato:req.body.formato,
+                    tipodoc:req.body.tipodoc,
                     request:{
                             tipo:'POST',
                             descricao:`Inserir um novo documento`,
@@ -114,6 +120,10 @@ exports.postDocumento=(req,res,next)=>{
                 Documento:{
                     idreuniao:result[0].idreuniao,
                     iddocumento:result[0].iddocumento,
+                    nome:result[0].nome,
+                    designacao:result[0].designacao,
+                    formato:result[0].formato,
+                    tipodoc:result[0].tipodoc,
                     request:{
                         tipo:'GET',
                         descricao:`Retornar detalhes de um documento`,
@@ -136,7 +146,7 @@ exports.postDocumento=(req,res,next)=>{
     
         const id=req.params.id_documento;
         connection.query(`UPDATE Documentos SET idreuniao=?,iddocumento=?
-        WHERE idreuniao=${id} `,
+        WHERE idreuniao=${req.params.id_reuniao} AND iddocumento=${id}`,
         [req.body.idreuniao,req.body.iddocumento],
         (error,resultado,field)=>{
             connection.release();
@@ -152,6 +162,10 @@ exports.postDocumento=(req,res,next)=>{
                 documento:{ 
                         idreuniao:req.body.idreuniao,
                         iddocumento:req.body.iddocumento,
+                        nome:req.body.nome,
+                        designacao:req.body.designacao,
+                        formato:req.body.formato,
+                        tipodoc:req.body.tipodoc,
                         request:{
                                 tipo:'PATCH',
                                 descricao:`Alterar os detalhes de um documento`,

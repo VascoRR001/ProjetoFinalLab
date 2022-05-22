@@ -129,19 +129,82 @@ exports.getAssunto=(req,res,next)=>{
       });
 }
 
-//ACABAR ESTES DOIS MÉTODOS
+
 exports.patchAssunto=(req,res,next)=>{
-//continuar a desenvolver os métodos
+    mysql.getConnection((erro,connection)=>{
+    
+        const id=req.params.id_assunto;
+        connection.query(`UPDATE Assuntos SET designacao=?,numeracao=?,votacao=?,
+        WHERE idreuniao=${req.params.id_reuniao} AND idassunto=${id}`,
+        [req.body.designacao,req.body.numeracao,req.body.numeracao,req.body.votacao],
+        (error,resultado,field)=>{
+            connection.release();
+    
+            if(error){
+                return res.status(500).send({
+                    error:error,
+                    Response:null
+                });
+            }
+            const DocumentoAtualizado={
+                mensagem:'Documento alterado com sucesso!',
+                documento:{ 
+                        idreuniao:req.params.id_reuniao,
+                        iddocumento:req.params.id_documento,
+                        nome:req.body.nome,
+                        designacao:req.body.designacao,
+                        numeracao:req.body.numeracao,
+                        votacao:req.body.votacao,
+                        request:{
+                                tipo:'PATCH',
+                                descricao:`Alterar os detalhes de um documento`,
+                                url:'http://localhost:3000/documentos'+id
+                                }        
+                         }
+            }
+            res.status(202).send({DocumentoAtualizado})
+        });
+    
+      });
+    
 }
 exports.deleteAssunto=(req,res,next)=>{
-    const novoAssunto={
-        idreuniao:{
-           mensagem:`Pertence á reunião com o id ${req.params.id_assunto}` 
-        },
-        designacao:req.body.designacao,
-        numeracao:req.body.numeracao,
-        votacao:req.body.votacao,
-        tomadacon:req.body.tomadacon
-    }
-    res.status(200).send({mensagem:'Assunto removido com sucesso!',novoAssunto});
+    mysql.getConnection((erro,connection)=>{
+            
+        const id=req.params.id_assunto;
+        mysql.query(`DELETE FROM Assuntos WHERE idassunto=${id} `,
+        (error,result,field)=>{
+            if(error){
+                return res.status(500).send({
+                    error:error,
+                    Response:null
+                });
+            }
+            mysql.query(`DELETE FROM IntervenienteshasAssuntos WHERE idassunto=${id}`,
+            (error,resultado,field)=>{
+                connection.release();
+                if(error){
+                    return res.status(500).send({
+                        error:error,
+                        Response:null
+                    });
+                }
+                const DocumentoRemovido={
+                    mensagem:'Documento removido com sucesso!',
+                    documento:{ 
+                            request:{
+                                    tipo:'DELETE',
+                                    descricao:`Remover um documento`,
+                                    url:'http://localhost:3000/documentos/'+id
+                                    }        
+                             }
+                }
+        
+                res.status(202).send({DocumentoRemovido})
+
+            });
+            
+        });
+    
+      });
 }
