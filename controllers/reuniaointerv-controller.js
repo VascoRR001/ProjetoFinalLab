@@ -181,8 +181,33 @@ exports.getReunioesTerminadas=(req,res,next)=>{
 
 
 
-exports.postPresenças=(req,res,next)=>{//Acabar método
- res.status(200).send({mensagem:'Este é o método responsável por marcar presenças'});   
+exports.postPresenças=(req,res,next)=>{//atributo presenças pertençe á tabela ReunioeshasIntervenientes
+   mysql.getConnection((err,connection)=>{//melhorar
+    connection.query(`INSERT INTO IntervenienteshasReunioes (presente) VALUES(?)
+                      WHERE idinterv=${req.params.id_interv} AND idreuniao=${req.params.id_reuniao}`,
+    [req.body.presente],
+    (error,resultado,field)=>{
+        connection.release();
+        if(error){
+            return res.status(500).send({
+                error:error,
+                Response:null
+            });
+        }
+        const Presenca={
+            mensagem:`O interveniente com o id ${req.params.id_interv} esteve presente na reunião ${req.params.id_reuniao}`,
+            interveniente:{
+                id_interv:req.params.id_interv,
+                presente:req.body.presente
+            },
+            request:{
+              tipo:'POST',
+              descricao:`Marcar presença numa determinada reunião`,
+              url:'http://localhost:3000/reunioes'
+              } 
+        }
+    }); 
+   });
 }
 
 exports.postVotacao=(req,res,next)=>{
