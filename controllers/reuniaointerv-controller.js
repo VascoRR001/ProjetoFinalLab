@@ -27,6 +27,7 @@ exports.getIntervenientes=(req,res,next)=>{
                 mensagem:`Os ${result.length} intervenientes que foram convocados para a reunião com o id ${req.params.id_reuniao} são:`,
                 intervenientes:result.map(interveniente=>{
                     return {
+                        id_interv:interveniente.idinterv,
                         nome:interveniente.nome,
                         apelido:interveniente.apelido,
                         request:{
@@ -98,7 +99,7 @@ exports.getReunioesEmCurso=(req,res,next)=>{
     FROM ReunioeshasIntervenientes
     INNER JOIN Reunioes
     ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=;${req.params.id_interv}
-    AND Reunioes.dinicio >= ${Date.toDateString()} AND Reunioes.dfim==${NULL}`,
+    AND Reunioes.dinicio <= ${Date.toDateString()} AND Reunioes.dfim==${NULL}`,
         (error,result,field)=>{
             connection.release();
             if(error){
@@ -143,7 +144,7 @@ exports.getReunioesTerminadas=(req,res,next)=>{
     FROM ReunioeshasIntervenientes
     INNER JOIN Reunioes
     ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=;${req.params.id_interv}
-    AND Reunioes.dinicio >= ${Date.toDateString()} AND Reunioes.dfim>=Reunioes.dinicio`,
+    AND Reunioes.dinicio <= ${Date.toDateString()} AND Reunioes.dfim>=Reunioes.dinicio`,
         (error,result,field)=>{
             connection.release();
             if(error){
@@ -180,8 +181,33 @@ exports.getReunioesTerminadas=(req,res,next)=>{
 
 
 
-exports.postPresenças=(req,res,next)=>{
- res.status(200).send({mensagem:'Este é o método responsável por marcar presenças'});   
+exports.postPresenças=(req,res,next)=>{//atributo presenças pertençe á tabela ReunioeshasIntervenientes
+   mysql.getConnection((err,connection)=>{//melhorar
+    connection.query(`INSERT INTO IntervenienteshasReunioes (presente) VALUES(?)
+                      WHERE idinterv=${req.params.id_interv} AND idreuniao=${req.params.id_reuniao}`,
+    [req.body.presente],
+    (error,resultado,field)=>{
+        connection.release();
+        if(error){
+            return res.status(500).send({
+                error:error,
+                Response:null
+            });
+        }
+        const Presenca={
+            mensagem:`O interveniente com o id ${req.params.id_interv} esteve presente na reunião ${req.params.id_reuniao}`,
+            interveniente:{
+                id_interv:req.params.id_interv,
+                presente:req.body.presente
+            },
+            request:{
+              tipo:'POST',
+              descricao:`Marcar presença numa determinada reunião`,
+              url:'http://localhost:3000/reunioes'
+              } 
+        }
+    }); 
+   });
 }
 
 exports.postVotacao=(req,res,next)=>{
@@ -204,8 +230,9 @@ exports.postVotacao=(req,res,next)=>{
                     mensagem:`Não existe nenhum assunto com o id ${req.params.id_assunto} ou reunião com o id ${req.params.id_reuniao}`
                 });
             }else{
-                connection.query(`INSERT INTO IntervenienteshasAssuntos (idinterv,idassunto,voto) VALUES(?,?,?)`,//de seguida terá que se realizar uma insert com o valor do voto (aprovado,reprovado ou abstenção)
-      (error,result,field)=>{
+                connection.query(`INSERT INTO IntervenienteshasAssuntos (idinterv,idassunto,voto) VALUES(?,?,?)`,
+                [result[0].id_interv,result[0].id_reuniao,req.body.voto],//de seguida terá que se realizar uma insert com o valor do voto (aprovado,reprovado ou abstenção)
+                (error,result,field)=>{
 
         if(error){
             return res.status(404).send({
@@ -222,7 +249,7 @@ exports.postVotacao=(req,res,next)=>{
     INNER JOIN IntervenienteshasAssuntos
       ON IntervenienteshasAssuntos.idassunto AND Assuntos.idassunto
     INNER JOIN Intervenientes
-      ON Intervenientes.idassunto = IntervenienteshasAsuntos.idassunto`,
+      ON Intervenientes.idinterv = IntervenienteshasAsuntos.idinterv`,
       (error,result,field)=>{
         connection.release();
 
@@ -289,6 +316,7 @@ exports.postVotacao=(req,res,next)=>{
           connection.query('INSERT INTO IntervenienteshasReunioes (idinterv,idreuniao) VALUES(?,?)',
           [result.insertedId,req.params.id_reuniao],
           (error,resultado,field)=>{
+              connection.release();
               if(error){
                   return res.status(500).send({
                       error:error,
@@ -339,6 +367,7 @@ exports.postVotacao=(req,res,next)=>{
           connection.query('INSERT INTO IntervenienteshasReunioes (idinterv,idreuniao) VALUES(?,?)',
           [result.insertedId,req.params.id_reuniao],
           (error,resultado,field)=>{
+              connection.release();
               if(error){
                   return res.status(500).send({
                       error:error,
