@@ -50,7 +50,6 @@ exports.getReunioes=(req,res,next)=>{
         connection.query(`SELECT ReunioeshasIntervenientes.idreuniao,
         Reunioes.descricao,
         Reunioes.local,
-        Reunioes.tiporeuniao,
     FROM ReunioeshasIntervenientes
     INNER JOIN Reunioes
     ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=;${req.params.id_interv}`,
@@ -75,7 +74,6 @@ exports.getReunioes=(req,res,next)=>{
                         id_reuniao:reuniao.idreuniao,
                         descricao:reuniao.descricao,
                         local:reuniao.local,
-                        tiporeuniao:reuniao.tiporeuniao,
                         request:{
                             tipo:'GET',
                             descricao:`Retorna todas as reuniões que o interveniente foi convocado`,
@@ -95,7 +93,6 @@ exports.getReunioesEmCurso=(req,res,next)=>{
         connection.query(`SELECT ReunioeshasIntervenientes.idreuniao,
         Reunioes.descricao,
         Reunioes.local,
-        Reunioes.tiporeuniao,
     FROM ReunioeshasIntervenientes
     INNER JOIN Reunioes
     ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=;${req.params.id_interv}
@@ -120,7 +117,6 @@ exports.getReunioesEmCurso=(req,res,next)=>{
                         id_reuniao:reuniao.idreuniao,
                         descricao:reuniao.descricao,
                         local:reuniao.local,
-                        tiporeuniao:reuniao.tiporeuniao,
                         request:{
                             tipo:'GET',
                             descricao:`Retorna todas as reuniões em curso de um determinado interveniente`,
@@ -140,7 +136,6 @@ exports.getReunioesTerminadas=(req,res,next)=>{
         connection.query(`SELECT ReunioeshasIntervenientes.idreuniao,
         Reunioes.descricao,
         Reunioes.local,
-        Reunioes.tiporeuniao,
     FROM ReunioeshasIntervenientes
     INNER JOIN Reunioes
     ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=;${req.params.id_interv}
@@ -165,7 +160,6 @@ exports.getReunioesTerminadas=(req,res,next)=>{
                         id_reuniao:reuniao.idreuniao,
                         descricao:reuniao.descricao,
                         local:reuniao.local,
-                        tiporeuniao:reuniao.tiporeuniao,
                         request:{
                             tipo:'GET',
                             descricao:`Retorna todas as reuniões terminadas de um determinado interveniente`,
@@ -183,7 +177,7 @@ exports.getReunioesTerminadas=(req,res,next)=>{
 
 exports.postPresenças=(req,res,next)=>{//atributo presenças pertençe á tabela ReunioeshasIntervenientes
    mysql.getConnection((err,connection)=>{//melhorar
-    connection.query(`INSERT INTO IntervenienteshasReunioes (presente) VALUES(?)
+    connection.query(`INSERT INTO ReunioeshasIntervenientes (presente) VALUES(?)
                       WHERE idinterv=${req.params.id_interv} AND idreuniao=${req.params.id_reuniao}`,
     [req.body.presente],
     (error,resultado,field)=>{

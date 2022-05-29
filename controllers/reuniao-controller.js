@@ -21,7 +21,6 @@ exports.getReunioes=(req,res,next)=>{
                     descricao:reuniao.descricao,
                     local:reuniao.local,
                     duracao:reuniao.duracao+'h',
-                    tiporeuniao:reuniao.tiporeuniao,
                     request:{
                         tipo:'GET',
                         descricao:`Retorna os detalhes de uma reunião`,
@@ -41,8 +40,8 @@ exports.postReuniao=(req,res,next)=>{
 
     mysql.getConnection((erro,connection)=>{
           if(erro) return res.status(500).send({error:erro}); 
-          connection.query('INSERT INTO Reunioes (descricao,duracao,local,dinicio,tiporeuniao) VALUES (?,?,?,?,?)',
-          [req.body.descricao,req.body.duracao,req.body.local,req.body.dinicio,req.body.tiporeuniao],
+          connection.query('INSERT INTO Reunioes (descricao,duracao,local,dinicio) VALUES (?,?,?,?)',
+          [req.body.descricao,req.body.duracao,req.body.local,req.body.dinicio],
           (error,result,field)=>{
         connection.release();
     
@@ -60,7 +59,6 @@ exports.postReuniao=(req,res,next)=>{
                     local:req.body.local,
                     duracao:req.body.duracao+'h',
                     dinicio:req.body.dinicio,
-                    tiporeuniao:req.body.tiporeuniao,
                     request:{
                             tipo:'POST',
                             descricao:`Inserir uma nova reunião`,
@@ -103,7 +101,6 @@ exports.postReuniao=(req,res,next)=>{
                     duracao:result[0].duracao+'h',
                     local:result[0].local,
                     dinicio:result[0].dinicio,
-                    tiporeuniao:result[0].tiporeuniao,
                     request:{
                         tipo:'GET',
                         descricao:`Retornar detalhes de um reunião`,
@@ -125,9 +122,9 @@ exports.postReuniao=(req,res,next)=>{
         mysql.getConnection((erro,connection)=>{
     
         const id=req.params.id_reuniao;
-        connection.query(`UPDATE Reunioes SET descricao=?,duracao=?,local=?,dinicio=?,tiporeuniao=?
+        connection.query(`UPDATE Reunioes SET descricao=?,duracao=?,local=?,dinicio=?
         WHERE idreuniao=${id} `,
-        [req.body.descricao,req.body.duracao,req.body.local,req.body.dinicio,req.body.tiporeuniao],
+        [req.body.descricao,req.body.duracao,req.body.local,req.body.dinicio],
         (error,resultado,field)=>{
             connection.release();
     
@@ -145,7 +142,6 @@ exports.postReuniao=(req,res,next)=>{
                         local:req.body.local,
                         duracao:req.body.duracao,
                         dinicio:req.body.dinicio,
-                        tiporeuniao:req.body.tiporeuniao,
                         request:{
                                 tipo:'PATCH',
                                 descricao:`Alterar os detalhes de uma reunião`,
@@ -198,10 +194,10 @@ exports.postReuniao=(req,res,next)=>{
 exports.TerminaReuniao=(req,res,next)=>{//fazer uma query antes de dar update á tabela que irá verificar se a data atual é válida (data atual > dinicio0)
     mysql.getConnection((erro,connection)=>{
         if(erro) return res.status(500).send({error:erro}); 
-        connection.query(`UPDATE Reunioes SET descricao=?,duracao=?,local=?,dinicio=?,tiporeuniao=? 
+        connection.query(`UPDATE Reunioes SET descricao=?,duracao=?,local=?,dinicio=?
         WHERE idreuniao=${req.params.id_reuniao}
         AND dfim==${NULL}`,
-        [req.body.descricao,req.body.duracao,req.body.local,req.body.dinicio,req.body.tiporeuniao],
+        [req.body.descricao,req.body.duracao,req.body.local,req.body.dinicio],
         (error,result,field)=>{
       connection.release();
   
