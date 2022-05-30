@@ -307,8 +307,8 @@ exports.postVotacao=(req,res,next)=>{
                   Response:null
               });
           }
-          connection.query('INSERT INTO IntervenienteshasReunioes (idinterv,idreuniao) VALUES(?,?)',
-          [result.insertedId,req.params.id_reuniao],
+          connection.query('INSERT INTO ReunioeshasIntervenientes (idinterv,idreuniao) VALUES(?,?)',
+          [result.insertId,req.params.id_reuniao],
           (error,resultado,field)=>{
               connection.release();
               if(error){
@@ -330,8 +330,8 @@ exports.postVotacao=(req,res,next)=>{
                     url:'http://localhost:3000/reunioes'
                     } 
               }
+              res.status(201).send({IntervInserido});
           });
-          res.status(201).send({IntervInserido});
            });
       
         });

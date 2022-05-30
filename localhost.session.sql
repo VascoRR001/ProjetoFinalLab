@@ -1,5 +1,1 @@
-SELECT * FROM Registos;
-
-
-
-          
+SELECT * FROM Intervenientes;

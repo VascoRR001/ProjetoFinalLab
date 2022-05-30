@@ -12,11 +12,11 @@ router.get('/mostrar-reunioes/:id_interv',ReunioesIntervController.getReunioes);
 router.get('/mostrar-reunioes-em-curso/:id_interv',ReunioesIntervController.getReunioesEmCurso);
 router.get('/mostrar-reunioes-terminadas/:id_interv',ReunioesIntervController.getReunioesTerminadas);//Acabar o método
 //MARCA AS PRESENÇAS DOS INTERVENIENTES QUE ESTABELECERAM CONEXÃO NUMA REUNIÃO ESPECÍFICA
-router.post('/presenças',login,ReunioesIntervController.postPresenças);
+router.post('/presenças',ReunioesIntervController.postPresenças);
 //VERIFICA SE UM ASSUNTO PERTENCENTE A UMA DETERMINADA REUNIÃO É POR VOTAÇÃO OU POR TOMADA DE CONHECIMENTO 
-router.post('/votar-em-assunto',login,ReunioesIntervController.postVotacao);
+router.post('/votar-em-assunto',ReunioesIntervController.postVotacao);
 //ADICIONA UM INTEVENIENTE A UMA REUNIÃO
-router.post('/:id_reuniao',login,ReunioesController.postIntervEmReun);
+router.post('/:id_reuniao',ReunioesIntervController.postIntervEmReun);
 //ADICIONA MÚLTIPLOS INTERVENIENTES A UMA REUNIÃO DE UMA VEZ
 router.post('/:id_reuniao',ReunioesIntervController.postIntervsEmReun);
 

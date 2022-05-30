@@ -10,7 +10,6 @@ exports.getDocumentos=(req,res,next)=>{
         Reunioes.descricao,
         Reunioes.local,
         Reunioes.dinicio,
-        Reunioes.tiporeuniao
     FROM Documentos
     INNER JOIN Reunioes
     ON Reunioes.idreuniao=Documentos.idreuniao;`,
@@ -31,7 +30,6 @@ exports.getDocumentos=(req,res,next)=>{
                     local:documento.local,
                     duracao:documento.duracao,
                     dinicio:documento.dinicio,
-                    tiporeuniao:documento.tiporeuniao,
                     documento:{
                         iddocumento:documento.iddocumento
                     },

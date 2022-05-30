@@ -10,7 +10,6 @@ exports.getAssuntos=(req,res,next)=>{
             Reunioes.idreuniao,
             Reunioes.descricao,
             Reunioes.local,
-            Reunioes.tiporeuniao
         FROM Documentos
         INNER JOIN Reunioes
         ON Reunioes.idreuniao=Assuntos.idreuniao`,
@@ -29,7 +28,6 @@ exports.getAssuntos=(req,res,next)=>{
                         idreuniao:assunto.idreuniao,
                         descricao:assunto.descricao,
                         local:assunto.local,
-                        tiporeuniao:documento.tiporeuniao,
                         assunto:{
                             idassunto:assunto.idassunto,
                             designacao:assunto.designacao

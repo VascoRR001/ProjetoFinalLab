@@ -9,14 +9,14 @@ const { Router } = require('express');
 //RETORNA TODAS AS REUNIÕES
 router.get('/',ReunioesController.getReunioes);
 //INSERE UMA REUNIÃO IMPLEMENTAR O getConnection para cada um dos verbos!!!!
-router.post('/',login,ReunioesController.postReuniao);
+router.post('/',ReunioesController.postReuniao);
 //RETORNA OS DADOS DE UMA REUNIÃO
 router.get('/:id_reuniao',ReunioesController.getReuniao);
 //ALTERA UMA REUNIÃO
-router.patch('/:id_reuniao',login,ReunioesController.patchReuniao);
+router.patch('/:id_reuniao',ReunioesController.patchReuniao);
 //REMOVE UMA REUNIÃO
-router.delete('/:id_reuniao',login,ReunioesController.deleteReuniao);
+router.delete('/:id_reuniao',ReunioesController.deleteReuniao);
 //TERMINA UMA REUNIÃO
-router.post('/:id_reuniao',login,ReunioesController.TerminaReuniao);
+router.post('/:id_reuniao',ReunioesController.TerminaReuniao);
 
 module.exports=router;
