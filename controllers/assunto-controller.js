@@ -67,6 +67,7 @@ exports.postAssunto=(req,res,next)=>{
         connection.query('INSERT INTO IntervenienteshasAssuntos (idinterv,idassunto) VALUES(?,?)',
         [req.body.id_interv,result.insertId],
         (error,resultado,field)=>{
+            connection.release();
             if(error){
                 return res.status(500).send({
                     error:error,
@@ -99,7 +100,7 @@ exports.postAssunto=(req,res,next)=>{
 
 exports.getAssunto=(req,res,next)=>{
     mysql.getConnection((erro,connection)=>{
-        connection.query(`SELECT * FROM Documentos WHERE idassunto=${req.params.id_assunto}&& idreuniao=${req.params.id_reuniao}` ,
+        connection.query(`SELECT * FROM Assuntos WHERE idassunto=${req.params.id_assunto} AND idreuniao=${req.params.id_reuniao}` ,
         (error,result,field)=>{
             connection.release();      
             if(error){
@@ -142,7 +143,22 @@ exports.patchAssunto=(req,res,next)=>{
     mysql.getConnection((erro,connection)=>{
     
         const id=req.params.id_assunto;
-        connection.query(`UPDATE Assuntos SET designacao=?,numeracao=?,votacao=?,
+
+        connection.query('SELECT * FROM Assuntos WHERE idreuniao=? AND idassunto=?',
+        [req.params.id_reuniao,req.params.id_assunto],
+        (error,result,field)=>{
+        if(error){
+            return res.status(500).send({
+                error:error,
+                Response:null
+            });
+        }
+        if(result.length==0){
+            return res.status(404).send({
+                mensagem:'Parâmetros incorretos!'
+            });
+        }
+        connection.query(`UPDATE Assuntos SET designacao=?,numeracao=?,votacao=?
         WHERE idreuniao=${req.params.id_reuniao} AND idassunto=${id}`,
         [req.body.designacao,req.body.numeracao,req.body.numeracao,req.body.votacao],
         (error,resultado,field)=>{
@@ -171,7 +187,7 @@ exports.patchAssunto=(req,res,next)=>{
                          }
             }
             res.status(202).send({DocumentoAtualizado})
-        });
+        })});
     
       });
     
@@ -180,23 +196,38 @@ exports.deleteAssunto=(req,res,next)=>{
     mysql.getConnection((erro,connection)=>{
             
         const id=req.params.id_assunto;
-        mysql.query(`DELETE FROM Assuntos WHERE idassunto=${id} `,
-        (error,result,field)=>{
+        connection.query('SELECT * FROM Assuntos WHERE idreuniao=? AND idassunto=?',
+        [req.params.id_reuniao,req.params.id_assunto],
+        (error,resultado,field)=>{
             if(error){
                 return res.status(500).send({
                     error:error,
                     Response:null
                 });
             }
-            mysql.query(`DELETE FROM IntervenienteshasAssuntos WHERE idassunto=${id}`,
+            if(resultado.length==0){
+                return res.status(404).send({
+                    mensagem:'Parâmetros errados!'
+                });
+            }
+            connection.query(`DELETE FROM IntervenienteshasAssuntos WHERE idassunto=${id}`,
             (error,resultado,field)=>{
-                connection.release();
                 if(error){
                     return res.status(500).send({
                         error:error,
                         Response:null
                     });
                 }
+                connection.query(`DELETE FROM Assuntos WHERE idassunto=${id} `,
+                (error,result,field)=>{
+                connection.release();
+                   if(error){
+                    return res.status(500).send({
+                    error:error,
+                    Response:null
+                   });
+                }
+            
                 const DocumentoRemovido={
                     mensagem:'Documento removido com sucesso!',
                     documento:{ 
@@ -209,9 +240,11 @@ exports.deleteAssunto=(req,res,next)=>{
                 }
         
                 res.status(202).send({DocumentoRemovido})
+            
+             })
 
             });
-            
+
         });
     
       });

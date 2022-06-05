@@ -26,7 +26,7 @@ app.use((req,res,next)=>{
 app.use('/reunioes',rotaReunioes);
 app.use('/documentos',rotaDocumentos);
 app.use('/usuarios',rotaUsuarios);
-app.use('/',rotaAssuntos);
+app.use('/assuntos',rotaAssuntos);
 app.use('/reunioes/intervenientes',rotaReunioesInterv);
 
 
