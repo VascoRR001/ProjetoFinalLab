@@ -178,8 +178,8 @@ exports.getReunioesTerminadas=(req,res,next)=>{
 exports.postPresenças=(req,res,next)=>{//atributo presenças pertençe á tabela ReunioeshasIntervenientes
    mysql.getConnection((err,connection)=>{//melhorar
     connection.query(`INSERT INTO ReunioeshasIntervenientes (presente) VALUES(?)
-                      WHERE idinterv=${req.params.id_interv} AND idreuniao=${req.params.id_reuniao}`,
-    [req.body.presente],
+                      WHERE idinterv=? AND idreuniao=?`,
+    [req.body.presente,req.params.id_interv,req.params.id_reuniao],
     (error,resultado,field)=>{
         connection.release();
         if(error){
@@ -200,6 +200,7 @@ exports.postPresenças=(req,res,next)=>{//atributo presenças pertençe á tabel
               url:'http://localhost:3000/reunioes'
               } 
         }
+        res.status(200).send(Presenca);
     }); 
    });
 }

@@ -12,7 +12,7 @@ router.get('/mostrar-reunioes/:id_interv',ReunioesIntervController.getReunioes);
 router.get('/mostrar-reunioes-em-curso/:id_interv',ReunioesIntervController.getReunioesEmCurso);
 router.get('/mostrar-reunioes-terminadas/:id_interv',ReunioesIntervController.getReunioesTerminadas);//Acabar o método
 //MARCA AS PRESENÇAS DOS INTERVENIENTES QUE ESTABELECERAM CONEXÃO NUMA REUNIÃO ESPECÍFICA
-router.post('/presenças',ReunioesIntervController.postPresenças);
+router.post('/presencas/:id_interv/:id_reuniao',ReunioesIntervController.postPresenças);
 //VERIFICA SE UM ASSUNTO PERTENCENTE A UMA DETERMINADA REUNIÃO É POR VOTAÇÃO OU POR TOMADA DE CONHECIMENTO 
 router.post('/votar-em-assunto',ReunioesIntervController.postVotacao);
 //ADICIONA UM INTEVENIENTE A UMA REUNIÃO
