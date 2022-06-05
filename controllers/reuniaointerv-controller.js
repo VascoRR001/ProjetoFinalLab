@@ -344,12 +344,16 @@ exports.postVotacao=(req,res,next)=>{
         mysql.getConnection((erro,connection)=>{
             if(erro) return res.status(500).send({error:erro});
             const IntervenientesArray=[];
-            for(i=0;i<req.body.length;i++){
-                IntervenientesArray.append(req.body[i].id_interv);
+            for(let i=0;i<req.body.Intervenientes.length;i++){
+                IntervenientesArray.push({
+                    id:req.body.Intervenientes[i].id,
+                    nome:req.body.Intervenientes[i].nome,
+                    apelido:req.body.Intervenientes[i].apelido
+                });
             }
 
-            IntervenientesArray.forEach(connection.query('INSERT INTO Intervenientes (nome,apelido) VALUES (?,?)',
-            [req.body[i].nome,req.body[i].apelido],
+            IntervenientesArray.forEach(interv=>{connection.query('INSERT INTO Intervenientes (nome,apelido) VALUES (?,?)',
+            [interv.nome,interv.apelido],
             (error,result,field)=>{
           
           if(error){
@@ -358,8 +362,8 @@ exports.postVotacao=(req,res,next)=>{
                   Response:null
               });
           }
-          connection.query('INSERT INTO IntervenienteshasReunioes (idinterv,idreuniao) VALUES(?,?)',
-          [result.insertedId,req.params.id_reuniao],
+          connection.query('INSERT INTO ReunioeshasIntervenientes (idinterv,idreuniao) VALUES(?,?)',
+          [result.insertId,req.params.id_reuniao],
           (error,resultado,field)=>{
               connection.release();
               if(error){
@@ -371,21 +375,16 @@ exports.postVotacao=(req,res,next)=>{
               const IntervInserido={
                   mensagem:`Interveniente inserido na reunião ${req.params.id_reuniao}`,
                   interveniente:{
-                      id:result.insertedId,
-                      nome:req.body.nome,
-                      apelido:req.body.apelido
+                      id:result.insertId,
+                      nome:interv.nome,
+                      apelido:interv.apelido
                   } 
               }
+              res.status(201).send({
+                IntervInserido
+              });
           });
-          res.status(201).send({
-              IntervInserido,
-              request:{
-                tipo:'POST',
-                descricao:`Inserir um interveniente a uma reunião`,
-                url:'http://localhost:3000/reunioes'
-                }
-            });
-           }));
+           })});
       
         });
     }

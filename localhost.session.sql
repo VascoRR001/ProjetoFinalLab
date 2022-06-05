@@ -1,1 +1,1 @@
-SELECT * FROM Intervenientes;
+SELECT * FROM Assuntos;

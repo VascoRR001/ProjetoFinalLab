@@ -5,14 +5,14 @@ exports.getAssuntos=(req,res,next)=>{
     mysql.getConnection((err,connection)=>{
         if(err) return res.status(500).send({error:err});    
         mysql.query(`
-        SELECT assuntos.idassunto,
-            assuntos.desingacao,
+        SELECT Assuntos.idassunto,
+            Assuntos.designacao,
             Reunioes.idreuniao,
             Reunioes.descricao,
-            Reunioes.local,
-        FROM Documentos
-        INNER JOIN Reunioes
-        ON Reunioes.idreuniao=Assuntos.idreuniao`,
+            Reunioes.local
+        FROM Assuntos 
+        INNER JOIN Reunioes 
+        ON Assuntos.idreuniao=Reunioes.idreuniao;`,
         (error,result,field)=>{
             connection.release();
             if(error){
@@ -54,34 +54,44 @@ exports.postAssunto=(req,res,next)=>{
             if(result.length==0) return res.status(404).send({mensagem:'Reunião não encontrada'});
         });
 
-        connection.query('INSERT INTO assuntos (designacao,idreuniao,numeracao,voto) VALUES (?,?,?,?)',
-        [req.body.designacao,req.params.id_reuniao,req.body.numeracao,req.body.voto],
+        connection.query('INSERT INTO Assuntos (designacao,idreuniao,numeracao,votacao) VALUES (?,?,?,?)',
+        [req.body.designacao,req.params.id_reuniao,req.body.numeracao,req.body.votacao],
         (error,result,field)=>{
               
-        connection.release();
-    
         if(error){
             return res.status(500).send({
                 error:error,
                 Response:null
             });
         }
-        const AssuntoCriado={
-            mensagem:'Assunto inserido com sucesso!',
-            assunto:{ 
-                    idreuniao:req.params.id_reuniao,
-                    idassunto:result.insertedId,
-                    designacao:req.body.designacao,
-                    numeracao:req.body.numeracao,
-                    votacao:req.body.votacao,
-                    request:{
-                            tipo:'POST',
-                            descricao:`Inserir um novo assunto associado a uma reunião`,
-                            url:'http://localhost:3000/documentos'
-                            }        
-                     }
-        }
-        res.status(201).send({DocumentoCriado});
+        connection.query('INSERT INTO IntervenienteshasAssuntos (idinterv,idassunto) VALUES(?,?)',
+        [req.body.id_interv,result.insertId],
+        (error,resultado,field)=>{
+            if(error){
+                return res.status(500).send({
+                    error:error,
+                    Response:null
+                });
+            }
+            const AssuntoCriado={
+                mensagem:'Assunto inserido com sucesso!',
+                assunto:{ 
+                        idreuniao:req.params.id_reuniao,
+                        idassunto:result.insertedId,
+                        designacao:req.body.designacao,
+                        numeracao:req.body.numeracao,
+                        votacao:req.body.votacao,
+                        request:{
+                                tipo:'POST',
+                                descricao:`Inserir um novo assunto associado a uma reunião`,
+                                url:'http://localhost:3000/documentos'
+                                }        
+                         }
+            }
+            res.status(201).send({AssuntoCriado});
+
+        });
+        
          });
     
       });
