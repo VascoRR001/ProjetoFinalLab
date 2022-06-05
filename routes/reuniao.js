@@ -18,5 +18,8 @@ router.patch('/:id_reuniao',ReunioesController.patchReuniao);
 router.delete('/:id_reuniao',ReunioesController.deleteReuniao);
 //TERMINA UMA REUNIÃO
 router.post('/:id_reuniao',ReunioesController.TerminaReuniao);
+//TERMINAR REUNIÃO
+router.patch('/terminar-reuniao/:id_reuniao',ReunioesController.TerminaReuniao);
+
 
 module.exports=router;

@@ -1,3 +1,5 @@
+const { cookie } = require('express/lib/response');
+
 const mysql=require('../mysql').pool;
 
 
@@ -194,12 +196,26 @@ exports.postReuniao=(req,res,next)=>{
 exports.TerminaReuniao=(req,res,next)=>{//fazer uma query antes de dar update á tabela que irá verificar se a data atual é válida (data atual > dinicio0)
     mysql.getConnection((erro,connection)=>{
         if(erro) return res.status(500).send({error:erro}); 
-        connection.query(`UPDATE Reunioes SET descricao=?,duracao=?,local=?,dinicio=?
-        WHERE idreuniao=${req.params.id_reuniao}
-        AND dfim==${NULL}`,
-        [req.body.descricao,req.body.duracao,req.body.local,req.body.dinicio],
+        connection.query('SELECT * FROM Reunioes WHERE idreuniao=?',
+        [req.params.id_reuniao],
+        (erro,resultado,field)=>{
+            if(erro){
+                return res.status(500).send({
+                    error:error,
+                    Response:null
+                });
+            }
+            if(resultado.length==0){
+                return res.status(404).send({
+                    mensagem:`A reunião com o id ${req.params.id_reuniao} não existe! `
+                });
+            }
+        const date = new Date().toDateString();
+        connection.query(`UPDATE Reunioes SET dfim=?
+         WHERE idreuniao=${req.params.id_reuniao}`,
+         [date],
         (error,result,field)=>{
-      connection.release();
+        connection.release();
   
       if(error){
           return res.status(500).send({
@@ -210,11 +226,6 @@ exports.TerminaReuniao=(req,res,next)=>{//fazer uma query antes de dar update á
       const reuniaoCriada={
           mensagem:'Reunião Terminada com sucesso!',
           reuniao:{ 
-                  id_reuniao:req.body.idreuniao,
-                  descricao:req.body.descricao,
-                  duracao:req.body.duracao+'h',
-                  dinicio:req.body.dinicio,
-                  dfim:req.body.dfim,
                   request:{
                           tipo:'POST',
                           descricao:`Terminar uma reunião`,
@@ -223,7 +234,8 @@ exports.TerminaReuniao=(req,res,next)=>{//fazer uma query antes de dar update á
                    }
       }
       res.status(201).send({reuniaoCriada});
-       });
+       })
+        });
   
     });
 }

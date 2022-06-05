@@ -5,10 +5,10 @@ exports.getIntervenientes=(req,res,next)=>{
         if(err) return res.status(500).send({error:err});    
         connection.query(`SELECT ReunioeshasIntervenientes.idinterv,
         Intervenientes.nome,
-        Intervenientes.apelido,
+        Intervenientes.apelido
     FROM ReunioeshasIntervenientes
     INNER JOIN Intervenientes
-    ON ReunioeshasIntervenientes.idinterv=Intervenientes.idinterv AND ReunioeshasIntervenientes.idreuniao=;${req.params.id_reuniao}`,
+    ON ReunioeshasIntervenientes.idinterv=Intervenientes.idinterv AND ReunioeshasIntervenientes.idreuniao=${req.params.id_reuniao}`,
         (error,result,field)=>{
             connection.release();
             if(error){
@@ -49,10 +49,10 @@ exports.getReunioes=(req,res,next)=>{
         if(err) return res.status(500).send({error:err});    
         connection.query(`SELECT ReunioeshasIntervenientes.idreuniao,
         Reunioes.descricao,
-        Reunioes.local,
+        Reunioes.local
     FROM ReunioeshasIntervenientes
     INNER JOIN Reunioes
-    ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=;${req.params.id_interv}`,
+    ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=${req.params.id_interv}`,
         (error,result,field)=>{
             connection.release();
             if(error){
@@ -293,7 +293,7 @@ exports.postVotacao=(req,res,next)=>{
 
 
 
-    exports.postIntervEmReun=(req,res,next)=>{
+    exports.postIntervEmReun=(req,res,next)=>{//melhorar na parte de associar intervenientes já existentes a uma nova reunião
         
         mysql.getConnection((erro,connection)=>{
             if(erro) return res.status(500).send({error:erro}); 
@@ -308,7 +308,7 @@ exports.postVotacao=(req,res,next)=>{
               });
           }
           connection.query('INSERT INTO ReunioeshasIntervenientes (idinterv,idreuniao) VALUES(?,?)',
-          [result.insertId,req.params.id_reuniao],
+          [req.body.id_interv || result.insertId,req.params.id_reuniao],
           (error,resultado,field)=>{
               connection.release();
               if(error){
