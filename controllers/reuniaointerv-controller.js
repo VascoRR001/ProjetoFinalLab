@@ -294,7 +294,7 @@ exports.postVotacao=(req,res,next)=>{
 
 
 
-    exports.postIntervEmReun=(req,res,next)=>{//melhorar na parte de associar intervenientes já existentes a uma nova reunião
+    exports.postIntervEmReun=(req,res,next)=>{//Apenas os secretários de reunião podem fazer isto
         
         mysql.getConnection((erro,connection)=>{
             if(erro) return res.status(500).send({error:erro}); 

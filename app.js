@@ -5,6 +5,7 @@ const rotaDocumentos=require('./routes/documento');
 const rotaAssuntos=require('./routes/assuntos');
 const rotaUsuarios=require('./routes/registos');
 const rotaReunioesInterv=require('./routes/reuniaointerv');
+const rotaEmail=require('./routes/email');
 const morgan=require('morgan');
 const bodyParser=require('body-parser');
 
@@ -28,6 +29,7 @@ app.use('/documentos',rotaDocumentos);
 app.use('/usuarios',rotaUsuarios);
 app.use('/assuntos',rotaAssuntos);
 app.use('/reunioes/intervenientes',rotaReunioesInterv);
+app.use('/send-email',rotaEmail);
 
 
 
