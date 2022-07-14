@@ -24,7 +24,7 @@ router.get('/',DocumentosController.getDocumentos);
  * @swagger
  * /documentos/adicionar-documento/{id_reuniao}:
  *  post:
- *      summary: Insere um assunto numa reunião
+ *      summary: Insere um documento numa reunião
  *      tags:
  *          - Documentos
  *      consumes:

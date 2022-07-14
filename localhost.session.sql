@@ -1,2 +1,2 @@
 
-SELECT * FROM Reunioes;
+SELECT * FROM ReunioeshasIntervenientes;
