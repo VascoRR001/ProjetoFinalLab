@@ -4,7 +4,7 @@ const mysql=require('../mysql').pool;
 exports.getAssuntos=(req,res,next)=>{
     mysql.getConnection((err,connection)=>{
         if(err) return res.status(500).send({error:err});    
-        mysql.query(`
+        connection.query(`
         SELECT Assuntos.idassunto,
             Assuntos.designacao,
             Reunioes.idreuniao,
@@ -48,14 +48,14 @@ exports.getAssuntos=(req,res,next)=>{
 exports.postAssunto=(req,res,next)=>{
     mysql.getConnection((erro,connection)=>{
         connection.query('SELECT * FROM Reunioes WHERE idreuniao=?',
-        [req.params.id_reuniao],
+        [req.body.id_reuniao],
         (error,result,fields)=>{
             if(error) return res.status(500).send({error:error});
             if(result.length==0) return res.status(404).send({mensagem:'Reunião não encontrada'});
         });
 
         connection.query('INSERT INTO Assuntos (designacao,idreuniao,numeracao,votacao) VALUES (?,?,?,?)',
-        [req.body.designacao,req.params.id_reuniao,req.body.numeracao,req.body.votacao],
+        [req.body.designacao,req.body.id_reuniao,req.body.numeracao,req.body.votacao],
         (error,result,field)=>{
               
         if(error){
@@ -77,8 +77,8 @@ exports.postAssunto=(req,res,next)=>{
             const AssuntoCriado={
                 mensagem:'Assunto inserido com sucesso!',
                 assunto:{ 
-                        idreuniao:req.params.id_reuniao,
-                        idassunto:result.insertedId,
+                        idreuniao:req.body.id_reuniao,
+                        idassunto:result.insertId,
                         designacao:req.body.designacao,
                         numeracao:req.body.numeracao,
                         votacao:req.body.votacao,
@@ -137,7 +137,46 @@ exports.getAssunto=(req,res,next)=>{
     
       });
 }
-
+exports.getAssuntosReuniao=(req,res,next)=>{
+    mysql.getConnection((erro,connection)=>{
+        connection.query(`SELECT * FROM Assuntos WHERE idreuniao=${req.params.id_reuniao}` ,
+        (error,result,field)=>{
+            connection.release();      
+            if(error){
+                return res.status(500).send({
+                    error:error,
+                    Response:null
+                });
+            }
+            if(result.length==0){
+                return res.status(404).send({
+                    mensagem:'Não existem assuntos que perteçam a esta reunião'
+                });
+            }
+            const resposta={
+                quantidade:result.length,
+                assuntos:result.map(assunto=>{
+                    return {
+                        idreuniao:assunto.idreuniao,
+                        assunto:{
+                            idassunto:assunto.idassunto,
+                            designacao:assunto.designacao
+                        },
+                        request:{
+                            tipo:'GET',
+                            descricao:`Retorna os detalhes de um assunto pertencente a uma reunião`,
+                            url:'http://localhost:3000/assuntos/'+assunto.idassunto
+                        }
+                }
+    
+                })
+            }
+    
+            res.status(201).send({resposta});
+        });
+    
+      });
+}
 
 exports.patchAssunto=(req,res,next)=>{
     mysql.getConnection((erro,connection)=>{
@@ -155,7 +194,7 @@ exports.patchAssunto=(req,res,next)=>{
         }
         if(result.length==0){
             return res.status(404).send({
-                mensagem:'Parâmetros incorretos!'
+                mensagem:'Não existe nenhuma assunto com esse id que pertença a esta reunião'
             });
         }
         connection.query(`UPDATE Assuntos SET designacao=?,numeracao=?,votacao=?
@@ -207,7 +246,7 @@ exports.deleteAssunto=(req,res,next)=>{
             }
             if(resultado.length==0){
                 return res.status(404).send({
-                    mensagem:'Parâmetros errados!'
+                    mensagem:'Id da reunião ou Id do assunto incorretos'
                 });
             }
             connection.query(`DELETE FROM IntervenienteshasAssuntos WHERE idassunto=${id}`,

@@ -11,13 +11,6 @@ const pool=mysql.createPool({
 });
 
 
-/*pool.getConnection((err,connection)=>{
-    if(connection.release()){
-        console.log('Conexão libertada!');
-    }
-    if(err) console.log('erro');
-    
-});*/
 
 
 

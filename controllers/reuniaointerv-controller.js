@@ -89,14 +89,15 @@ exports.getReunioes=(req,res,next)=>{
 
 exports.getReunioesEmCurso=(req,res,next)=>{
     mysql.getConnection((err,connection)=>{
-        if(err) return res.status(500).send({error:err});    
+        if(err) return res.status(500).send({error:err}); 
+        const date = new Date().toDateString();   
         connection.query(`SELECT ReunioeshasIntervenientes.idreuniao,
         Reunioes.descricao,
-        Reunioes.local,
+        Reunioes.local
     FROM ReunioeshasIntervenientes
     INNER JOIN Reunioes
-    ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=;${req.params.id_interv}
-    AND Reunioes.dinicio <= ${Date.toDateString()} AND Reunioes.dfim==${NULL}`,
+    ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=${req.params.id_interv}
+    AND Reunioes.dfim IS NULL`,
         (error,result,field)=>{
             connection.release();
             if(error){
@@ -107,7 +108,7 @@ exports.getReunioesEmCurso=(req,res,next)=>{
             }
             if(result.length==0){
                 return res.status(500).send({
-                    mensagem:`Não existe nenhum interveniente com o id ${req.params.id_interv}`
+                    mensagem:`O interveniente não possui reuniões em curso`
                 });
             }
             const resposta={
@@ -132,14 +133,15 @@ exports.getReunioesEmCurso=(req,res,next)=>{
 
 exports.getReunioesTerminadas=(req,res,next)=>{
     mysql.getConnection((err,connection)=>{
+        const date = new Date().toDateString();
         if(err) return res.status(500).send({error:err});    
         connection.query(`SELECT ReunioeshasIntervenientes.idreuniao,
         Reunioes.descricao,
-        Reunioes.local,
+        Reunioes.local
     FROM ReunioeshasIntervenientes
     INNER JOIN Reunioes
-    ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=;${req.params.id_interv}
-    AND Reunioes.dinicio <= ${Date.toDateString()} AND Reunioes.dfim>=Reunioes.dinicio`,
+    ON ReunioeshasIntervenientes.idreuniao=Reunioes.idreuniao AND ReunioeshasIntervenientes.idinterv=${req.params.id_interv}
+    AND Reunioes.dfim IS NOT NULL`,
         (error,result,field)=>{
             connection.release();
             if(error){
@@ -177,15 +179,20 @@ exports.getReunioesTerminadas=(req,res,next)=>{
 
 exports.postPresenças=(req,res,next)=>{//atributo presenças pertençe á tabela ReunioeshasIntervenientes
    mysql.getConnection((err,connection)=>{//melhorar
-    connection.query(`INSERT INTO ReunioeshasIntervenientes (presente) VALUES(?)
-                      WHERE idinterv=? AND idreuniao=?`,
-    [req.body.presente,req.params.id_interv,req.params.id_reuniao],
+    connection.query(`UPDATE ReunioeshasIntervenientes SET presente=?
+                      WHERE idinterv=${req.params.id_interv} AND idreuniao=${req.params.id_reuniao}`,
+    [req.body.presente],
     (error,resultado,field)=>{
         connection.release();
         if(error){
             return res.status(500).send({
                 error:error,
                 Response:null
+            });
+        }
+        if(resultado.length==0){
+            return res.status(404).send({
+                mensagem:'Falha na marcação da presença'
             });
         }
         const Presenca={
@@ -208,11 +215,12 @@ exports.postPresenças=(req,res,next)=>{//atributo presenças pertençe á tabel
 exports.postVotacao=(req,res,next)=>{
     mysql.getConnection((err,connection)=>{
         if(err) return res.status(500).send({error:err});    
-        connection.query(`SELECT * FROM Reunioes 
-        WHERE Reunioes.idreuniao==${req.params.id_reuniao} AND resAssunto==(
-            SELECT * FROM Assuntos 
-        WHERE Assuntos.idassunto==${req.params.id_assunto} AND Assuntos.votacao==${1}
-        )`,
+        connection.query(`SELECT * FROM Assuntos 
+        WHERE idassunto=${req.params.id_assunto} AND votacao=${1} AND idreuniao=(
+            SELECT idreuniao
+            FROM Reunioes 
+        WHERE idreuniao=${req.params.id_reuniao}
+        );`,
         (error,result,field)=>{
             if(error){
                 return res.status(404).send({
@@ -225,8 +233,8 @@ exports.postVotacao=(req,res,next)=>{
                     mensagem:`Não existe nenhum assunto com o id ${req.params.id_assunto} ou reunião com o id ${req.params.id_reuniao}`
                 });
             }else{
-                connection.query(`INSERT INTO IntervenienteshasAssuntos (idinterv,idassunto,voto) VALUES(?,?,?)`,
-                [result[0].id_interv,result[0].id_reuniao,req.body.voto],//de seguida terá que se realizar uma insert com o valor do voto (aprovado,reprovado ou abstenção)
+                connection.query(`UPDATE IntervenienteshasAssuntos SET idinterv=?,idassunto=?,voto=? WHERE idassunto=${req.params.id_assunto} AND idinterv=${req.body.id_interv}`,
+                [req.body.id_interv,result[0].idassunto,req.body.voto],
                 (error,result,field)=>{
 
         if(error){
@@ -236,7 +244,7 @@ exports.postVotacao=(req,res,next)=>{
             });
         }
 
-        connection.query(`SELECT Reunioes.idreuniao, Reunioes.descricao,assuntos.idassunto,assuntos.designacao,
+        connection.query(`SELECT Reunioes.idreuniao, Reunioes.descricao,Assuntos.idassunto,Assuntos.designacao,
                           Intervenientes.idinterv,Intervenientes.nome,Intervenientes.apelido
         FROM Reunioes
     INNER JOIN Assuntos
@@ -244,7 +252,7 @@ exports.postVotacao=(req,res,next)=>{
     INNER JOIN IntervenienteshasAssuntos
       ON IntervenienteshasAssuntos.idassunto AND Assuntos.idassunto
     INNER JOIN Intervenientes
-      ON Intervenientes.idinterv = IntervenienteshasAsuntos.idinterv`,
+      ON Intervenientes.idinterv = IntervenienteshasAssuntos.idinterv`,
       (error,result,field)=>{
         connection.release();
 
@@ -261,7 +269,7 @@ exports.postVotacao=(req,res,next)=>{
         }
 
         const resposta={
-            mensagem:`O interveniente com o id ${req.params.id_interv} votou no assunto ${req.params.id_assunto} com o valor de ${req.body.voto}`,
+            mensagem:`O interveniente com o id ${req.body.id_interv} votou no assunto com o id ${req.params.id_assunto} com o valor de (${req.body.voto})`,
             reuniao: {
                     id_reuniao:result[0].idreuniao,
                     descricao:result[0].descricao,
@@ -273,7 +281,7 @@ exports.postVotacao=(req,res,next)=>{
                         designacao:result[0].designacao,
                     },
                     request:{
-                        tipo:'POST',
+                        tipo:'PATCH',
                         descricao:`Verifica se o assunto é para votar ou tomar conhecimento e posteriormente inserir o voto`,
                         url:'http://localhost:3000/reunioes/intervenientes/votar-em-assunto/'+req.params.id_interv
                     }
@@ -309,7 +317,7 @@ exports.postVotacao=(req,res,next)=>{
               });
           }
           connection.query('INSERT INTO ReunioeshasIntervenientes (idinterv,idreuniao) VALUES(?,?)',
-          [req.body.id_interv || result.insertId,req.params.id_reuniao],
+          [/*req.body.id_interv ||*/ result.insertId,req.params.id_reuniao],
           (error,resultado,field)=>{
               connection.release();
               if(error){
@@ -347,7 +355,6 @@ exports.postVotacao=(req,res,next)=>{
             const IntervenientesArray=[];
             for(let i=0;i<req.body.Intervenientes.length;i++){
                 IntervenientesArray.push({
-                    id:req.body.Intervenientes[i].id,
                     nome:req.body.Intervenientes[i].nome,
                     apelido:req.body.Intervenientes[i].apelido
                 });
@@ -356,7 +363,7 @@ exports.postVotacao=(req,res,next)=>{
             IntervenientesArray.forEach(interv=>{connection.query('INSERT INTO Intervenientes (nome,apelido) VALUES (?,?)',
             [interv.nome,interv.apelido],
             (error,result,field)=>{
-          
+               
           if(error){
               return res.status(500).send({
                   error:error,

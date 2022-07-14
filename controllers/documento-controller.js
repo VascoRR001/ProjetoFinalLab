@@ -5,11 +5,12 @@ exports.getDocumentos=(req,res,next)=>{
     if(err) return res.status(500).send({error:err});    
     mysql.query(`
     SELECT Documentos.iddocumento,
+        Documentos.nome,
+        Documentos.designacao,
         Reunioes.idreuniao,
-        Reunioes.duracao,
         Reunioes.descricao,
         Reunioes.local,
-        Reunioes.dinicio,
+        Reunioes.dinicio
     FROM Documentos
     INNER JOIN Reunioes
     ON Reunioes.idreuniao=Documentos.idreuniao;`,
@@ -28,10 +29,11 @@ exports.getDocumentos=(req,res,next)=>{
                     idreuniao:documento.idreuniao,
                     descricao:documento.descricao,
                     local:documento.local,
-                    duracao:documento.duracao,
                     dinicio:documento.dinicio,
                     documento:{
-                        iddocumento:documento.iddocumento
+                        iddocumento:documento.iddocumento,
+                        nome:documento.nome,
+                        designacao:documento.designacao
                     },
                     request:{
                         tipo:'GET',
@@ -59,7 +61,7 @@ exports.postDocumento=(req,res,next)=>{
             if(result.length==0) return res.status(404).send({mensagem:'Reunião não encontrada'});
         });
 
-          connection.query('INSERT INTO Documentos (idreuniao,nome,designacao,formato,tipodoc) VALUES (?)',
+          connection.query('INSERT INTO Documentos (idreuniao,nome,designacao,formato,tipodoc) VALUES (?,?,?,?,?)',
           [req.params.id_reuniao,req.body.nome,req.body.designacao,req.body.formato,req.body.tipodoc],
           (error,result,field)=>{
               
@@ -75,7 +77,7 @@ exports.postDocumento=(req,res,next)=>{
             mensagem:'Documento inserido com sucesso!',
             documento:{ 
                     idreuniao:req.params.id_reuniao,
-                    iddocumento:result.insertedId,
+                    iddocumento:result.insertId,
                     nome:req.body.nome,
                     designacao:req.body.designacao,
                     formato:req.body.formato,
@@ -99,7 +101,7 @@ exports.postDocumento=(req,res,next)=>{
         mysql.getConnection((erro,connection)=>{
         const id=req.params.id_documento;
     
-        connection.query(`SELECT * FROM Documentos WHERE iddocumento=${id}&& idreuniao=${req.body.id_reuniao}` ,
+        connection.query(`SELECT * FROM Documentos WHERE iddocumento=${id} AND idreuniao=${req.params.id_reuniao}` ,
         (error,result,field)=>{
             connection.release();      
             if(error){
@@ -143,9 +145,9 @@ exports.postDocumento=(req,res,next)=>{
         mysql.getConnection((erro,connection)=>{
     
         const id=req.params.id_documento;
-        connection.query(`UPDATE Documentos SET idreuniao=?,iddocumento=?
+        connection.query(`UPDATE Documentos SET nome=?,designacao=?,formato=?,tipodoc=?
         WHERE idreuniao=${req.params.id_reuniao} AND iddocumento=${id}`,
-        [req.body.idreuniao,req.body.iddocumento],
+        [req.body.nome,req.body.designacao,req.body.formato,req.body.tipodoc],
         (error,resultado,field)=>{
             connection.release();
     
@@ -155,11 +157,16 @@ exports.postDocumento=(req,res,next)=>{
                     Response:null
                 });
             }
+            if(resultado.length==0){
+                return res.status(404).send({
+                    mensagem:'Id da reunião ou Id do documento incorretos!'
+                });
+            }
             const DocumentoAtualizado={
                 mensagem:'Documento alterado com sucesso!',
                 documento:{ 
-                        idreuniao:req.body.idreuniao,
-                        iddocumento:req.body.iddocumento,
+                        idreuniao:req.params.id_reuniao,
+                        iddocumento:req.params.id_documento,
                         nome:req.body.nome,
                         designacao:req.body.designacao,
                         formato:req.body.formato,
@@ -183,7 +190,7 @@ exports.postDocumento=(req,res,next)=>{
         mysql.getConnection((erro,connection)=>{
             
         const id=req.params.id_documento;
-        mysql.query(`DELETE FROM Documentos WHERE iddocumento=${id} `,
+        mysql.query(`DELETE FROM Documentos WHERE iddocumento=${id} AND idreuniao=${req.params.id_reuniao} `,
         (error,result,field)=>{
             connection.release();
     
@@ -191,6 +198,11 @@ exports.postDocumento=(req,res,next)=>{
                 return res.status(500).send({
                     error:error,
                     Response:null
+                });
+            }
+            if(result.length==0){
+                return res.status(404).send({
+                    mensagem:'Id da reunião ou Id do documento incorreto'
                 });
             }
             

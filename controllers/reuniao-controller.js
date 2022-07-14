@@ -1,4 +1,4 @@
-const { cookie } = require('express/lib/response');
+const { connect } = require('../routes/documento');
 
 const mysql=require('../mysql').pool;
 
@@ -15,6 +15,11 @@ exports.getReunioes=(req,res,next)=>{
                 Response:null
             });
         }
+        if(result.length==0){
+            return res.status(200).send({
+                mensagem:'Ainda não foram criadas reuniões'
+            });
+        }
         const resposta={
             quantidade:result.length,
             reunioes:result.map(reuniao=>{
@@ -23,6 +28,7 @@ exports.getReunioes=(req,res,next)=>{
                     descricao:reuniao.descricao,
                     local:reuniao.local,
                     duracao:reuniao.duracao+'h',
+                    dinicio:reuniao.dinicio,
                     request:{
                         tipo:'GET',
                         descricao:`Retorna os detalhes de uma reunião`,
@@ -124,6 +130,20 @@ exports.postReuniao=(req,res,next)=>{
         mysql.getConnection((erro,connection)=>{
     
         const id=req.params.id_reuniao;
+        connection.query('SELECT * FROM Reunioes WHERE idreuniao=?',
+        [id],
+        (error,result,field)=>{
+            if(error){
+                return res.status(500).send({
+                    error:error,
+                    Response:null
+                });
+            }
+            if(result.length==0){
+                return res.status(404).send({
+                    mensagem:'Não existe nenhuma reunião com este id'
+                });
+            }
         connection.query(`UPDATE Reunioes SET descricao=?,duracao=?,local=?,dinicio=?
         WHERE idreuniao=${id} `,
         [req.body.descricao,req.body.duracao,req.body.local,req.body.dinicio],
@@ -153,6 +173,7 @@ exports.postReuniao=(req,res,next)=>{
             }
             res.status(202).send({reuniaoAtualizada})
         });
+        });
     
       });
     
@@ -163,7 +184,21 @@ exports.postReuniao=(req,res,next)=>{
         mysql.getConnection((erro,connection)=>{
             
         const id=req.params.id_reuniao;
-        mysql.query(`DELETE FROM Reunioes WHERE idreuniao=${id} `,
+        connection.query('SELECT * FROM Reunioes WHERE idreuniao=?',
+        [id],
+        (error,result,field)=>{
+            if(error){
+                return res.status(500).send({
+                    error:error,
+                    Response:null
+                });
+            }
+            if(result.length==0){
+                return res.status(404).send({
+                    mensagem:'Não existe nenhuma reunião com este id'
+                });
+            }
+            connection.query(`DELETE FROM Reunioes WHERE idreuniao=${id} `,
         (error,result,field)=>{
             connection.release();
     
@@ -187,6 +222,8 @@ exports.postReuniao=(req,res,next)=>{
     
     
             res.status(202).send({reuniaoRemovida})
+        });
+            
         });
     
       });
@@ -212,8 +249,8 @@ exports.TerminaReuniao=(req,res,next)=>{//fazer uma query antes de dar update á
             }
         const date = new Date().toDateString();
         connection.query(`UPDATE Reunioes SET dfim=?
-         WHERE idreuniao=${req.params.id_reuniao}`,
-         [date],
+         WHERE idreuniao=${req.params.id_reuniao} AND dinicio <= ?`,
+         [date,date],
         (error,result,field)=>{
         connection.release();
   
