@@ -3,16 +3,16 @@ const app=express();
 const rotaReunioes=require('./routes/reuniao');
 const rotaDocumentos=require('./routes/documento');
 const rotaAssuntos=require('./routes/assuntos');
-const rotaUsuarios=require('./routes/registos');
 const rotaReunioesInterv=require('./routes/reuniaointerv');
-const rotaAutenticacao=require('./middleware/autenticacao');
 const morgan=require('morgan');
 //const basicAuth=require('./middleware/basic-auth');
 const bodyParser=require('body-parser');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi=require('swagger-ui-express');
 const cookieParser = require('cookie-parser')
-const Handler = require('./routes/handler.');
+const Handler = require('./routes/handler');
+const newHandler=require('./middleware/autenticacao');
+
 
 
 
@@ -59,12 +59,11 @@ const Options={
 const swaggerDocs=swaggerJSDoc(Options);
 app.use('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocs));
 app.use('/',Handler);
-app.use('/reunioes',rotaReunioes);
-app.use('/documentos',rotaDocumentos);
-app.use('/usuarios',rotaUsuarios);
-app.use('/assuntos',rotaAssuntos);
-app.use('/reunioes-intervenientes',rotaReunioesInterv);
-//app.use('/AutenticacaoUTAD',rotaAutenticacao);
+app.use('/reunioes',newHandler.welcomeHandler,rotaReunioes);
+app.use('/documentos',newHandler.welcomeHandler,rotaDocumentos);
+app.use('/assuntos',newHandler.welcomeHandler,rotaAssuntos);
+app.use('/reunioes-intervenientes',newHandler.welcomeHandler,rotaReunioesInterv);
+
 
 
 

@@ -1,9 +1,7 @@
 const express=require('express');
-const { pool } = require('../mysql');
 const router = express.Router();
-const login=require('../middleware/login');
 const ReunioesController=require('../controllers/reuniao-controller');
-const AutenticacaoUtilizador=require('../middleware/autenticacao');
+
 
 /**
  * @swagger

@@ -28,6 +28,7 @@ const sessions = {}
 
 const signinHandler=async (req,res,next)=>{
 
+ 
 //autentica alunos e docentes
   var api_url='https://api.utad.pt/ms/IUTADAuthSimul/UTADAuth.svc/Autenticar';
   var credentials = btoa(`ext_user_reunioes:ssp5Gp6jL9k6mb9fm6HX`);
@@ -49,22 +50,33 @@ const signinHandler=async (req,res,next)=>{
         IUPI:response.IUPI,
         username:response.Username
       }
+      if(user.IUPI=='00000000-0000-0000-0000-000000000000'){
+        return res.status(404).send({
+          Mensagem:'Precisa de se autenticar!'
+        });
+      }
      // funciona como um session_token
     const sessionToken = uuid.v4();
 
     // tempo de expiração 120s
-    const now = new Date()
-    const expiresAt = new Date(+now + 120 * 1000)
+    const now = new Date();
+    const expiresAt = new Date(+now + 160 * 1000);
 
     // cria a sessão com as informações do user
-    const session = new Session(user.username,user.IUPI, expiresAt)
+    const session = new Session(user.username,user.IUPI, expiresAt);
     //adiciona a sessão do user á estrutura de dados
-    sessions[sessionToken] = session
+    sessions[sessionToken] = session;
 
     // In the response, set a cookie on the client with the name "session_cookie"
     // and the value as the UUID we generated. We also set the expiry time
+    console.log(sessions[sessionToken]);
     res.cookie("session_token", sessionToken, { expires: expiresAt })
-    return res.end();
+    return res.status(200).send({
+      Mensagem:'Autenticado com sucesso!',
+      Token:sessionToken
+    });
+   
+    //res.status(201).send(response);
     })
     .catch(erro=>res.status(401).send({//caso a autenticação esteja errada (username inválido) este catch não envia a resposta
     error:{
@@ -72,63 +84,64 @@ const signinHandler=async (req,res,next)=>{
       erro
     }
     }));
-    next();
-
+  
 }
 
-const welcomeHandler = (req, res) => {
+
+const welcomeHandler = (req, res,next) => {
   
   if (!req.cookies) {
-      res.status(401).end()
+      res.status(401).send('Precisa de autenticar-se para gerar um cookie')
       return
   }
 
   
   const sessionToken = req.cookies['session_token']
   if (!sessionToken) {
-      res.status(401).end()
-      return
+      res.status(401).send('nome do cookie inválido');
+      return;
   }
 
   
   userSession = sessions[sessionToken]
   if (!userSession) {
-      res.status(401).end()
-      return
+      res.status(401).send('Não existe nenhuma sessão do user com esse cookie');
+      return;
   }
  
   if (userSession.isExpired()) {
-      delete sessions[sessionToken]
-      res.status(401).end()
-      return
+      delete sessions[sessionToken];
+      res.status(401).send('Cookie expirado');
+      return;
   }
 
   
-  res.send(`Welcome  ${userSession.username}!`).end()
+  //res.send(`Welcome  ${userSession.username}!`);
+  next();
 }
 
 const refreshHandler = (req, res) => {
   
   if (!req.cookies) {
-      res.status(401).end()
-      return
+      res.status(401).send('Precisa de autenticar-se para gerar um cookie');
+      return;
   }
 
-  const sessionToken = req.cookies['session_token']
+  const sessionToken = req.cookies['session_token'];
   if (!sessionToken) {
-      res.status(401).end()
-      return
+      res.status(401).send('nome do cookie inválido');
+      return;
   }
 
-  userSession = sessions[sessionToken]
+  userSession = sessions[sessionToken];
   if (!userSession) {
-      res.status(401).end()
-      return
+      res.status(401).send('Não existe nenhuma sessão do user com esse cookie');
+      return;
   }
   if (userSession.isExpired()) {
       delete sessions[sessionToken];
-      res.status(401).end();
-      return
+      res.status(401).send('Cookie expirado');
+      return;
   }
   
 
@@ -146,24 +159,29 @@ const refreshHandler = (req, res) => {
 
   //atribuir o session token ao novo valor criado
   res.cookie("session_token", newSessionToken, { expires: expiresAt });
+  res.status(201).send({
+    Mensagem:'Novo cookie',
+    newSessionToken
+  });
   res.end();
 }
 
 const logoutHandler = (req, res) => {
   if (!req.cookies) {
-      res.status(401).end();
+      res.status(401).send('Precisa de autenticar-se para gerar um cookie');
       return;
   }
 
   const sessionToken = req.cookies['session_token'];
   if (!sessionToken) {
-      res.status(401).end();
+      res.status(401).send('nome do cookie inválido');
       return;
   }
 
   delete sessions[sessionToken];
 
   res.cookie("session_token", "", { expires: new Date() });
+  res.status(201).send('Usuário efetuou o logout');
   res.end();
 }
 

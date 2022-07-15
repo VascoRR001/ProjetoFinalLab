@@ -1,9 +1,8 @@
 const express=require('express');
-const { pool } = require('../mysql');
 const router = express.Router();
 //const login=require('../middleware/login');
 const AssuntoController=require('../controllers/assunto-controller');
-const AutenticacaoUtilizador=require('../middleware/autenticacao');
+
 
 
 /**
@@ -17,7 +16,7 @@ const AutenticacaoUtilizador=require('../middleware/autenticacao');
  *      '200':
  *        description: Assuntos retornados com sucesso
  */
-router.get('/'/*,AutenticacaoUtilizadores.autenticacaoUtilizadores*/,AssuntoController.getAssuntos);
+router.get('/',AssuntoController.getAssuntos);
 /**
  * @swagger
  * /assuntos/adicionar-assunto:

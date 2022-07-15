@@ -1,8 +1,7 @@
 const express=require('express');
 const router = express.Router();
-const login=require('../middleware/login');
 const ReunioesIntervController=require('../controllers/reuniaointerv-controller');
-const AutenticacaoUtilizador=require('../middleware/autenticacao');
+
 
 
 /**

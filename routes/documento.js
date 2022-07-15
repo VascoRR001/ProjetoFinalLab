@@ -1,9 +1,7 @@
 const express=require('express');
-const { pool } = require('../mysql');
 const router = express.Router();
-const login=require('../middleware/login');
 const DocumentosController=require('../controllers/documento-controller');
-const AutenticacaoUtilizador=require('../middleware/autenticacao');
+
 //CRIAR TABELA DOCUMENTOS HAS INTERVENIENTES PARA DAR TRACK AOS INTERVENIENTES QUE CRIAM,ATUALIZAM,APAGAM DOCUMENTOS (APANES ALGUNS TIPOS DE UTILIZADORES PODEM FAZER ISSO)
 /**
  * @swagger
