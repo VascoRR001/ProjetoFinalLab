@@ -5,7 +5,6 @@ const rotaDocumentos=require('./routes/documento');
 const rotaAssuntos=require('./routes/assuntos');
 const rotaReunioesInterv=require('./routes/reuniaointerv');
 const morgan=require('morgan');
-//const basicAuth=require('./middleware/basic-auth');
 const bodyParser=require('body-parser');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi=require('swagger-ui-express');
@@ -31,9 +30,7 @@ app.use((req,res,next)=>{
     next();
 });
 
-/*app.post('/welcome',welcomeHandler);
-app.get('/refresh',refreshHandler);
-app.post('/logout',logoutHandler);*/
+
 const Options={
     definition:{
         info:{
@@ -59,10 +56,10 @@ const Options={
 const swaggerDocs=swaggerJSDoc(Options);
 app.use('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocs));
 app.use('/',Handler);
-app.use('/reunioes',newHandler.welcomeHandler,rotaReunioes);
-app.use('/documentos',newHandler.welcomeHandler,rotaDocumentos);
-app.use('/assuntos',newHandler.welcomeHandler,rotaAssuntos);
-app.use('/reunioes-intervenientes',newHandler.welcomeHandler,rotaReunioesInterv);
+app.use('/reunioes',/*newHandler.welcomeHandler*/rotaReunioes);
+app.use('/documentos',/*newHandler.welcomeHandler*/rotaDocumentos);
+app.use('/assuntos'/*newHandler.welcomeHandler*/,rotaAssuntos);
+app.use('/reunioes-intervenientes',/*newHandler.welcomeHandler*/rotaReunioesInterv);
 
 
 
