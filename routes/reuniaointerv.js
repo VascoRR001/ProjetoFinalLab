@@ -208,7 +208,7 @@ router.patch('/votar-em-assunto/:id_reuniao/:id_assunto',ReunioesIntervControlle
 
 /**
  * @swagger
- * /adicionar-interveniente/{id_reuniao}:
+ * /reunioes-intervenientes/adicionar-interveniente/{id_reuniao}:
  *  post:
  *      summary: Adicionar um interveniente a uma reunião
  *      tags:
@@ -248,7 +248,7 @@ router.patch('/votar-em-assunto/:id_reuniao/:id_assunto',ReunioesIntervControlle
 router.post('/adicionar-interveniente/:id_reuniao',ReunioesIntervController.postIntervEmReun);//sim
 /**
  * @swagger
- * /adicionar-intervenientes/{id_reuniao}:
+ * /reunioes-intervenientes/adicionar-intervenientes/{id_reuniao}:
  *  post:
  *      summary: Adicionar múltiplos intervenientes a uma reunião
  *      tags:

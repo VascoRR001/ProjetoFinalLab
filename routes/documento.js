@@ -2,7 +2,7 @@ const express=require('express');
 const router = express.Router();
 const DocumentosController=require('../controllers/documento-controller');
 
-//CRIAR TABELA DOCUMENTOS HAS INTERVENIENTES PARA DAR TRACK AOS INTERVENIENTES QUE CRIAM,ATUALIZAM,APAGAM DOCUMENTOS (APANES ALGUNS TIPOS DE UTILIZADORES PODEM FAZER ISSO)
+
 /**
  * @swagger
  * /documentos:
