@@ -98,7 +98,7 @@ const welcomeHandler = (req, res,next) => {
   
   const sessionToken = req.cookies['session_token']
   if (!sessionToken) {
-      res.status(401).send('nome do cookie inválido');
+      res.status(401).send('Requer existência de uma cookie');
       return;
   }
 
