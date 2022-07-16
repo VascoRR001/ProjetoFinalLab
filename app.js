@@ -35,7 +35,7 @@ const Options={
     definition:{
         info:{
             title:"Software de gestão de atas API",
-            description:"Documentação de uma API que tem como principal funcionalidade disponibilizar serviços aos seus clientes. Esta API consome serviços de API's externas tendo a funcionalidade de autenticação. A documentação dos métodos da API é separada por endpoints mais gerais (/assuntos,/documentos,/reunioes,/reunioes-intervenientes). O servidor para onde as requisições estão a ser enviadas é o localhost que comunica com o port 3000 e a base de dados é implementada em MariaDB/Mysql. Todos este métodos apenas funcionarão se o localhost estiver ligado e o docker da base de dados também. Tecnologia utilizada: Node.js/Ambiente de desenvolvimento: Visual Studio Code",
+            description:"Documentação de uma API que tem como principal funcionalidade disponibilizar serviços aos seus clientes. Esta API consome serviços de API's externas tendo a funcionalidade de autenticação. A documentação dos métodos da API é separada por endpoints mais gerais (/assuntos,/documentos,/reunioes,/reunioes-intervenientes). O servidor para onde as requisições estão a ser enviadas é remoto que comunica com a base de dados que é implementada em MariaDB/Mysql. Tecnologia utilizada: Node.js/Ambiente de desenvolvimento: Visual Studio Code",
             contact:{
                 email:'vascao2001@gmailcom'
             }
