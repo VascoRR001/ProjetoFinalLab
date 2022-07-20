@@ -58,7 +58,7 @@ app.use('/api-docs',swaggerUi.serve,swaggerUi.setup(swaggerDocs));
 app.use('/',Handler);
 app.use('/reunioes',/*newHandler.welcomeHandler*/rotaReunioes);
 app.use('/documentos',/*newHandler.welcomeHandler*/rotaDocumentos);
-app.use('/assuntos'/*newHandler.welcomeHandler*/,rotaAssuntos);
+app.use('/assuntos',/*newHandler.welcomeHandler*/rotaAssuntos);
 app.use('/reunioes-intervenientes',/*newHandler.welcomeHandler*/rotaReunioesInterv);
 
 
