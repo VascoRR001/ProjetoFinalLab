@@ -38,7 +38,7 @@ exports.getDocumentos=(req,res,next)=>{
                     request:{
                         tipo:'GET',
                         descricao:`Retorna os detalhes de um documento`,
-                        url:'http://localhost:3000/documentos/'+documento.iddocumento
+                        url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/documentos/'+documento.iddocumento
                     }
             }
 
@@ -85,7 +85,7 @@ exports.postDocumento=(req,res,next)=>{
                     request:{
                             tipo:'POST',
                             descricao:`Inserir um novo documento`,
-                            url:'http://localhost:3000/documentos'
+                            url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/documentos'
                             }        
                      }
         }
@@ -127,7 +127,7 @@ exports.postDocumento=(req,res,next)=>{
                     request:{
                         tipo:'GET',
                         descricao:`Retornar detalhes de um documento`,
-                        url:'http://localhost:3000/documentos'
+                        url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/documentos'
                     }
     
                 }
@@ -174,7 +174,7 @@ exports.postDocumento=(req,res,next)=>{
                         request:{
                                 tipo:'PATCH',
                                 descricao:`Alterar os detalhes de um documento`,
-                                url:'http://localhost:3000/documentos'+id
+                                url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/documentos'+id
                                 }        
                          }
             }
@@ -212,7 +212,7 @@ exports.postDocumento=(req,res,next)=>{
                         request:{
                                 tipo:'DELETE',
                                 descricao:`Remover um documento`,
-                                url:'http://localhost:3000/documentos/'+id
+                                url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/documentos/'+id
                                 }        
                          }
             }

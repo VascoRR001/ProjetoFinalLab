@@ -32,7 +32,7 @@ exports.getReunioes=(req,res,next)=>{
                     request:{
                         tipo:'GET',
                         descricao:`Retorna os detalhes de uma reunião`,
-                        url:'http://localhost:3000/reunioes/'+reuniao.idreuniao
+                        url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/reunioes/'+reuniao.idreuniao
                     }
             }
 
@@ -70,7 +70,7 @@ exports.postReuniao=(req,res,next)=>{
                     request:{
                             tipo:'POST',
                             descricao:`Inserir uma nova reunião`,
-                            url:'http://localhost:3000/reunioes'
+                            url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/reunioes'
                             }        
                      }
         }
@@ -112,7 +112,7 @@ exports.postReuniao=(req,res,next)=>{
                     request:{
                         tipo:'GET',
                         descricao:`Retornar detalhes de um reunião`,
-                        url:'http://localhost:3000/reunioes'
+                        url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/reunioes'
                     }
     
                 }
@@ -167,7 +167,7 @@ exports.postReuniao=(req,res,next)=>{
                         request:{
                                 tipo:'PATCH',
                                 descricao:`Alterar os detalhes de uma reunião`,
-                                url:'http://localhost:3000/reunioes/'+req.body.idreuniao
+                                url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/reunioes/'+req.body.idreuniao
                                 }        
                          }
             }
@@ -215,7 +215,7 @@ exports.postReuniao=(req,res,next)=>{
                         request:{
                                 tipo:'DELETE',
                                 descricao:`Remover uma reunião`,
-                                url:'http://localhost:3000/reunioes/'+id
+                                url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/reunioes/'+id
                                 }        
                          }
             }
@@ -266,7 +266,7 @@ exports.TerminaReuniao=(req,res,next)=>{//fazer uma query antes de dar update á
                   request:{
                           tipo:'POST',
                           descricao:`Terminar uma reunião`,
-                          url:'http://localhost:3000/reunioes'
+                          url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/reunioes'
                           }        
                    }
       }

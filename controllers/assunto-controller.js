@@ -35,7 +35,7 @@ exports.getAssuntos=(req,res,next)=>{
                         request:{
                             tipo:'GET',
                             descricao:`Retorna os detalhes de um assunto pertencenete a uma reunião`,
-                            url:'http://localhost:3000/assuntos/'+assunto.idassunto
+                            url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/Assuntos/'+assunto.idassunto
                         }
                 }
     
@@ -85,7 +85,7 @@ exports.postAssunto=(req,res,next)=>{
                         request:{
                                 tipo:'POST',
                                 descricao:`Inserir um novo assunto associado a uma reunião`,
-                                url:'http://localhost:3000/documentos'
+                                url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/Assuntos'
                                 }        
                          }
             }
@@ -125,7 +125,7 @@ exports.getAssunto=(req,res,next)=>{
                     request:{
                         tipo:'GET',
                         descricao:`Retornar detalhes de um assunto`,
-                        url:'http://localhost:3000/assuntos'
+                        url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/Assuntos'
                     }
     
                 }
@@ -165,7 +165,7 @@ exports.getAssuntosReuniao=(req,res,next)=>{
                         request:{
                             tipo:'GET',
                             descricao:`Retorna os detalhes de um assunto pertencente a uma reunião`,
-                            url:'http://localhost:3000/assuntos/'+assunto.idassunto
+                            url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/Assuntos/'+assunto.idassunto
                         }
                 }
     
@@ -221,7 +221,7 @@ exports.patchAssunto=(req,res,next)=>{
                         request:{
                                 tipo:'PATCH',
                                 descricao:`Alterar os detalhes de um documento`,
-                                url:'http://localhost:3000/documentos'+id
+                                url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/Assuntos/'+id
                                 }        
                          }
             }
@@ -273,7 +273,7 @@ exports.deleteAssunto=(req,res,next)=>{
                             request:{
                                     tipo:'DELETE',
                                     descricao:`Remover um documento`,
-                                    url:'http://localhost:3000/documentos/'+id
+                                    url:'https://software-gestao-reunioes-api.herokuapp.com/api-docs/Assuntos/'+id
                                     }        
                              }
                 }
